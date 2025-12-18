@@ -41,9 +41,9 @@ logger.info("Ruby Version for klayout: #{RUBY_VERSION}")
 
 if $input
   if $topcell
-    source($input, $topcell)
+    src = source($input, $topcell)
   else
-    source($input)
+    src = source($input)
   end
 end
 
@@ -57,6 +57,23 @@ else
   report_path = layout_dir.join("#{source.cell_name}.lvsdb").to_s
   logger.info("SG13G2 Klayout LVS runset output at default location: #{source.cell_name}.lvsdb")
   report_lvs($report_path)
+end
+
+#================================================
+#---------------- SRAM SUPPORT ------------------
+#================================================
+
+# Which of the SRAM cells have a floating bulk and thus will never
+# fulfill port matching
+def floating_bulk_sram_cell?(cell_name)
+  ( \
+    (cell_name =~ /^SP6T\w*Cell$/) \
+    or (cell_name =~ /^DP8T\w*Cell$/) \
+    or (cell_name =~ /^SP6T\w*WLDrive/) \
+    or (cell_name =~ /^DP8T\w*WLDrive/) \
+    or (cell_name =~ /^SP6T\w*Array_\d+X\d+$/) \
+    or (cell_name =~ /^DP8T\w*Array_\d+X\d+$/) \
+  )
 end
 
 #================================================
